@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: my-ray-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: ray-job
+        image: rayproject/ray:latest
+        command: ["python", "/app/airl_wandb_ray.py"]
+        volumeMounts:
+        - name: app-code
+          mountPath: /app
+      volumes:
+      - name: app-code
+        configMap:
+          name: my-app-code
