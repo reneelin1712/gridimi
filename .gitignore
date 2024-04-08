@@ -4,6 +4,10 @@
 
 /demon_by_human/models
 
+/link_pred/data
+/link_pred/wandb
+/link_pred/models
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

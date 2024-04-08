@@ -4,7 +4,6 @@ import ray
 from ray import train, tune
 from ray.air.integrations.wandb import WandbLoggerCallback, setup_wandb
 
-
 def train_function(config):
     for i in range(30):
         loss = config["mean"] + config["sd"] * np.random.randn()
