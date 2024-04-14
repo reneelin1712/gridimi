@@ -23,9 +23,9 @@ from env_test import NeumaEnvTest
 
 import wandb
 import ray
-from ray import tune
+from ray import tune, train
 from ray.air.integrations.wandb import setup_wandb
-
+from ray.tune.search.ax import AxSearch
 
 with open('data/link#/demon_train.pkl', "rb") as f:
     demon_train = pickle.load(f)
@@ -105,24 +105,34 @@ def train_function_wandb(config):
       return {"average_bleu_train":  mean_bleu_train}
 
 def tune_with_setup():
+    num_samples = 32
+    algo = AxSearch()
+    algo = tune.search.ConcurrencyLimiter(algo, max_concurrent=4)
+    
+
     tuner = tune.Tuner(
         train_function_wandb,
         tune_config=tune.TuneConfig(
             metric="average_bleu_train",
             mode="max",
-            num_samples=100,
+            search_alg=algo,
+            num_samples=num_samples
+        ),
+
+        run_config=train.RunConfig(
+        name="ax",
         ),
         param_space={
-            "total_steps": 2_000_000,
+            "total_steps": tune.uniform(500_000, 2_000_000),
             "seed": 1,
-            "n_epochs_policy": tune.randint(10, 20),
-            "n_epochs_disc": tune.randint(10,20),
-            "learning_rate": tune.uniform(0.000001, 0.003),
-            "batch_size": tune.choice([16,32,64,128,512]),
+            "n_epochs_policy": tune.choice([10, 15, 20]),
+            "n_epochs_disc": tune.choice([10,15,20]),
+            "learning_rate": tune.uniform(0.000001, 0.0003),
+            "batch_size": tune.choice([16,32,64]),
             "n_steps": tune.choice([1024, 2048]),
-            "clip_range": tune.choice([0.1,0.2,0.3]),
-            "gae_lambda": tune.choice([0.95,0.96,0.97,0.98,0.99]),
-            "vf_coef": tune.choice([0.5,1.0]),
+            "clip_range": 0.2,
+            "gae_lambda": 0.99,
+            "vf_coef": 0.5,
             "ent_coef": 0.2,
             "target_kl": 0.3,
         },

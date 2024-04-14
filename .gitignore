@@ -7,6 +7,17 @@
 /link_pred/data
 /link_pred/wandb
 /link_pred/models
+/link_pred/logs
+
+/link/data
+/link/wandb
+/link/models
+/link/logs
+
+/link_coord/data_
+/link_coord/wandb
+/link_coord/models
+/link_coord/logs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
